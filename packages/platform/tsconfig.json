@@ -1,0 +1,24 @@
+{
+	"compilerOptions": {
+		"target": "esnext",
+		"moduleResolution": "node",
+		"allowJs": true,
+		"resolveJsonModule": true,
+		"noEmit": true,
+		"strict": true,
+		"isolatedModules": true,
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"baseUrl": "src",
+		"paths": {
+			"#/*": [ "*" ]
+		}
+	},
+	"include": [
+		"src"
+	],
+	"exclude": [
+		"node_modules",
+		"**/*.spec.ts"
+	]
+}

@@ -1,0 +1,57 @@
+{
+  "extends": [
+    "standard-with-typescript",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "plugins": [
+    "@typescript-eslint",
+    "import"
+  ],
+  "parser":  "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "packages/platform/tsconfig.json"
+  },
+  "env": {
+    "node": true,
+    "es6": true,
+    "jest": true
+  },
+  "rules": {
+    "semi": ["error", "never"],
+    "no-underscore-dangle": 0,
+    "space-before-function-paren": ["error", "always"],
+    "arrow-body-style": 0,
+    "no-use-before-define": 0,
+    "arrow-parens": 0,
+    "valid-jsdoc": ["error", {
+      "requireReturn": true,
+      "requireReturnType": true,
+      "requireParamDescription": true,
+      "requireReturnDescription": true
+    }],
+    "import/no-extraneous-dependencies": [ "error",
+      { "devDependencies": ["**/*.test.js", "**/*.spec.js", "**/test/**/*.js"] }
+    ],
+    "import/prefer-default-export": 0,
+    "@typescript-eslint/strict-boolean-expressions": 0,
+    "@typescript-eslint/member-delimiter-style": ["error", {
+      "multiline": {
+        "delimiter": "none",
+        "requireLast": false
+      },
+      "singleline": {
+        "delimiter": "comma",
+        "requireLast": false
+      }
+     }],
+    "@typescript-eslint/no-use-before-define": ["error", { "functions": false, "typedefs": false }],
+    "@typescript-eslint/explicit-function-return-type": 0,
+    "@typescript-eslint/explicit-module-boundary-types": 0
+  },
+  "settings": {
+    "import/parsers": {
+      "@typescript-eslint/parser": [".ts", ".tsx"]
+    },
+    "import/resolver": {}
+  }
+}
