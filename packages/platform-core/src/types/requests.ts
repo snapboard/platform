@@ -1,5 +1,6 @@
 import { AxiosPromise, AxiosRequestConfig, Method } from 'axios'
 import { AppAuthData } from './authdata'
+import { AxiosResponse } from 'axios'
 export type { AxiosResponse as Response } from 'axios'
 
 /**
@@ -45,7 +46,7 @@ export interface Snap {
   request: SnapRequest
 }
 
-export type SnapRequest = (config: RequestFnConfig) => AxiosPromise<Response>
+export type SnapRequest = (config: RequestFnConfig) => AxiosPromise<AxiosResponse>
 
 export interface RequestFnConfig extends AxiosRequestConfig {
   url: string
