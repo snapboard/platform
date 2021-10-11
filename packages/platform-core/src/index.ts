@@ -1,6 +1,5 @@
 import axios from 'axios'
 import Handlebars from 'handlebars'
-import type { Request, Response } from 'express'
 import { get, isFunction, mapValues, isString, isArray, isPlainObject, map, merge, forEach } from 'lodash'
 import getPackageVersion from '@jsbits/get-package-version'
 import { App } from './types/app'
@@ -9,13 +8,16 @@ import { SnapRequest, RequestFnConfig, RequestObjectConfig, Snap } from './types
 
 export type { App } from './types/app'
 
-const PROJECT_ID = process.env.GCLOUD_PROJECT ?? process.env.PROJECT_ID ?? 'snapboard-prod'
+export interface HandlerEventData {
+  path: string
+  bundle: any
+}
 
-export async function handler (req: Request, res: Response, app: App, version: string) {
-  const { path, bundle } = req.body
+export async function handler (app: App, version: string, data: HandlerEventData) {
+  const { path, bundle } = data
 
   const start = Date.now()
-  const logger = createLogger('NOTICE', app, version, req)
+  const logger = createLogger('NOTICE', app, version)
   const requester = createRequestFn(app, logger)
 
   logger('platform__handler_start')
@@ -23,31 +25,25 @@ export async function handler (req: Request, res: Response, app: App, version: s
   try {
     const fn = get(app, path)
     if (!isFunction(fn) && fn?.url === undefined) {
-      throw new Error('Path is not a fn')
+      return fn
     }
 
     const result = isFunction(fn)
       ? await fn(createSnap(requester, logger), bundle)
       : await callRequestObject(requester, fn, bundle)
 
-    res.status(200).send(result)
-
     logger('platform__handler_end', {
       duration: Date.now() - start
     })
-  } catch (err: any) {
-    res.status(500).send({
-      error: {
-        code: err?.code,
-        reason: err?.reason,
-        message: err?.message
-      }
-    })
 
-    const errorLogger = createLogger('ERROR', app, version, req)
+    return result
+  } catch (err: any) {
+    const errorLogger = createLogger('ERROR', app, version)
     errorLogger('platform__handler_end', {
       duration: Date.now() - start
     })
+
+    throw err
   }
 }
 
@@ -89,18 +85,8 @@ export function createRequestFn (app: App, logger: Console['log']): SnapRequest 
   }
 }
 
-export function createLogger (severity: string, app: App, version: string, req: Request) {
+export function createLogger (severity: string, app: App, version: string) {
   const globalLogFields: Record<string, string> = {}
-
-  if (typeof req !== 'undefined') {
-    const traceHeader = req.header('X-Cloud-Trace-Context')
-    if (traceHeader && PROJECT_ID) {
-      const [trace] = traceHeader.split('/')
-      globalLogFields[
-        'logging.googleapis.com/trace'
-      ] = `projects/${PROJECT_ID}/traces/${trace}`
-    }
-  }
 
   return function logger (message: any, ...params: any[]) {
     const entry = {
@@ -113,7 +99,7 @@ export function createLogger (severity: string, app: App, version: string, req: 
       ...globalLogFields
     }
 
-    console.log(entry)
+    console.log(JSON.stringify(entry))
   }
 }
 
