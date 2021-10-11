@@ -1,6 +1,6 @@
 {
     "name": "@snapboard/platform-core",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "description": "Platform wrapper for Snapboard",
     "main": "lib/index.js",
     "author": "Calum Moore",
