@@ -2,11 +2,14 @@
   "name": "@snapboard/platform-core",
   "version": "0.1.1",
   "description": "Platform wrapper for Snapboard",
-  "main": "dist/index.js",
+  "main": "lib/index.js",
   "author": "Calum Moore",
   "repository": "https://github.com/snapboard/platform/tree/main/packages/core",
   "license": "MIT",
   "private": false,
+  "scripts": {
+    "build": "yarn tsc"
+  },
   "devDependencies": {
     "@types/express": "^4.17.13",
     "@types/lodash": "^4.14.175",

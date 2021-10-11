@@ -8,7 +8,7 @@ import pkg from '../package.json'
 
 export type { App } from './types/app'
 
-const PROJECT_ID = process.env.PROJECT_ID ?? 'snapboard-prod'
+const PROJECT_ID = process.env.GCLOUD_PROJECT ?? process.env.PROJECT_ID ?? 'snapboard-prod'
 
 export async function handler (req: Request, res: Response, app: App, version: string) {
   const { path, bundle } = req.body
