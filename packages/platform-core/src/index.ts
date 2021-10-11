@@ -25,6 +25,10 @@ export async function handler (app: App, version: string, data: HandlerEventData
   try {
     const fn = get(app, path)
     if (!isFunction(fn) && fn?.url === undefined) {
+      logger('platform__handler_end', {
+        duration: Date.now() - start
+      })
+
       return fn
     }
 
