@@ -1,13 +1,13 @@
 {
 	"compilerOptions": {
-		"lib": ["es2020"],
-    "module": "commonjs",
-    "target": "es2020",
+		"target": "esnext",
 		"moduleResolution": "node",
+		"module": "esnext",
 		"allowJs": true,
 		"resolveJsonModule": true,
+		"declaration": true,
+  	"emitDeclarationOnly": true,
 		"strict": true,
-		"outDir": "lib",
 		"isolatedModules": true,
 		"esModuleInterop": true,
 		"skipLibCheck": true,
@@ -17,7 +17,7 @@
 		}
 	},
 	"include": [
-		"src"
+		"./src"
 	],
 	"exclude": [
 		"node_modules",

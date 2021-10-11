@@ -2,9 +2,10 @@ import axios from 'axios'
 import Handlebars from 'handlebars'
 import type { Request, Response } from 'express'
 import { get, isFunction, mapValues, isString, isArray, isPlainObject, map, merge, forEach } from 'lodash'
+import getPackageVersion from '@jsbits/get-package-version'
 import { App } from './types/app'
 import { SnapRequest, RequestFnConfig, RequestObjectConfig, Snap } from './types/requests'
-import pkg from '../package.json'
+// import pkg from '../package.json'
 
 export type { App } from './types/app'
 
@@ -108,7 +109,7 @@ export function createLogger (severity: string, app: App, version: string, req: 
       params,
       appId: app?.id,
       version,
-      platformVersion: pkg.version,
+      platformVersion: getPackageVersion(),
       ...globalLogFields
     }
 

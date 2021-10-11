@@ -2,20 +2,30 @@
   "name": "@snapboard/platform-core",
   "version": "0.1.5",
   "description": "Platform wrapper for Snapboard",
-  "main": "lib/src/index.js",
+  "main": "dist/index.js",
   "author": "Calum Moore",
   "repository": "https://github.com/snapboard/platform/tree/main/packages/core",
   "license": "MIT",
   "private": false,
   "scripts": {
-    "build": "yarn tsc",
+    "clean": "rimraf dist/*",
+    "build": "yarn clean && yarn build:js && yarn build:types",
+    "build:js": "babel src --out-dir dist --extensions \".ts,.tsx\"",
+    "build:types": "tsc --outDir dist --declaration  --emitDeclarationOnly --rootDir src",
     "prepublish": "yarn build"
   },
   "devDependencies": {
+    "@babel/cli": "^7.15.7",
+    "@babel/core": "^7.15.8",
+    "@babel/plugin-proposal-class-properties": "^7.14.5",
+    "@babel/plugin-transform-runtime": "^7.15.8",
+    "@babel/preset-env": "^7.15.8",
+    "@babel/preset-typescript": "^7.15.0",
     "@types/express": "^4.17.13",
     "@types/lodash": "^4.14.175",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
+    "babel-plugin-module-resolver": "^4.1.0",
     "eslint": "^7.22.0",
     "eslint-config-standard-with-typescript": "^21.0.1",
     "eslint-import-resolver-typescript": "^2.5.0",
@@ -27,6 +37,8 @@
     "typescript": "^4.2.3"
   },
   "dependencies": {
+    "@babel/runtime": "^7.15.4",
+    "@jsbits/get-package-version": "^1.0.3",
     "axios": "^0.22.0",
     "handlebars": "^4.7.7",
     "lodash": "^4.17.21"
