@@ -1,28 +1,41 @@
 import { Input } from './inputs'
 import { AppAuthOAuth2Config } from './oauth2'
-import { AppRequest } from './requests'
+import { AppRequest, AppFn } from './requests'
 
 export type AppAuth<AT=any> = AppAuthToken<AT> | AppAuthOauth2
 
-export interface AppAuthBase <AT=any> {
+export interface AppAuthBase {
+  type: 'token'|'oauth2'
+
   /**
    * Info box will be displayed to the user during auth.
    */
   info?: string
-
   /**
    * Input fields required to obtain tokens for authentication
    */
   inputs?: Input[]
-
-  /**
-   * Test the connection using the provided token details. If connection
-   * is invalid then error should be thrown. Error logs will be displayed to user.
-   */
-  testConnection?: AppRequest<AT, any>
 }
 
-export interface AppAuthToken<AT=any> extends AppAuthBase<AT> {
+export interface AppAuthBaseWithTest <AT = any> extends AppAuthBase {
+  /**
+   * Test the connection using the provided token details. If connection
+   * is invalid then error should be thrown. Should return user data.
+   */
+  test?: AppRequest<AT, any>
+
+  /**
+   * Get the label that will be used to name the account
+   */
+  connectionLabel?: string|AppFn<string>
+
+  /**
+   * Get the externalId
+   */
+  externalId?: string|AppFn<string>
+}
+
+export interface AppAuthToken<AT=any> extends AppAuthBaseWithTest<AT> {
   type: 'token'
 
   /**
@@ -42,7 +55,7 @@ export interface AppAuthToken<AT=any> extends AppAuthBase<AT> {
   nameKey?: string
 }
 
-export interface AppAuthOauth2<AT=any> extends AppAuthBase<AT> {
+export interface AppAuthOauth2<AT=any> extends AppAuthBaseWithTest<AT> {
   type: 'oauth2'
 
   /**

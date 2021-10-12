@@ -9,12 +9,13 @@ import { SnapRequest, RequestFnConfig, RequestObjectConfig, Snap } from './types
 export type { App } from './types/app'
 
 export interface HandlerEventData {
+  type?: 'request'|'call'
   path: string
   bundle: any
 }
 
 export async function handler (app: App, version: string, data: HandlerEventData) {
-  const { path, bundle } = data
+  const { type, path, bundle } = data
 
   const start = Date.now()
   const logger = createLogger('NOTICE', app, version)
@@ -23,24 +24,22 @@ export async function handler (app: App, version: string, data: HandlerEventData
   logger('platform__handler_start')
 
   try {
-    const fn = get(app, path)
-    if (!isFunction(fn) && fn?.url === undefined) {
-      logger('platform__handler_end', {
-        duration: Date.now() - start
-      })
+    const val = get(app, path)
+    let res = null
 
-      return fn
+    if (isFunction(val)) {
+      res = await val(createSnap(requester, logger), bundle)
+    } else if (type === 'request') {
+      res = await callRequestObject(requester, val, getData(data))
+    } else {
+      res = handlebarsValue(val, getData(data))
     }
-
-    const result = isFunction(fn)
-      ? await fn(createSnap(requester, logger), bundle)
-      : await callRequestObject(requester, fn, bundle)
 
     logger('platform__handler_end', {
       duration: Date.now() - start
     })
 
-    return result
+    return res
   } catch (err: any) {
     const errorLogger = createLogger('ERROR', app, version)
     errorLogger('platform__handler_end', {
@@ -48,6 +47,15 @@ export async function handler (app: App, version: string, data: HandlerEventData
     })
 
     throw err
+  }
+}
+
+export function getData (data: HandlerEventData) {
+  return {
+    bundle: data.bundle,
+    process: {
+      env: process.env
+    }
   }
 }
 

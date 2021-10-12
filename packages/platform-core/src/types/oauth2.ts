@@ -1,10 +1,7 @@
 import { AppRequest } from './requests'
 
 export interface AppAuthOAuth2Config {
-  authorizeUrl: {
-    url: string
-    params?: Record<string, string>
-  }
+  authorizeUrl: AuthorizeUrlResponse
   getAccessToken: AppRequest<AccessTokenResponse, GetAccessTokenInputData>
   refreshAccessToken?: AppRequest<AccessTokenResponse, RefereshAccessTokenInputData>
   scopes?: string[]
@@ -17,6 +14,11 @@ export interface AccessTokenResponse {
   access_token: string
   refreshToken?: string
   refresh_token?: string
+}
+
+export interface AuthorizeUrlResponse {
+  url: string
+  params?: Record<string, string>
 }
 
 export interface GetAccessTokenInputData {
