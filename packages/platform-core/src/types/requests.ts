@@ -1,6 +1,5 @@
-import { AxiosPromise, AxiosRequestConfig, Method } from 'axios'
+import { AxiosPromise, AxiosRequestConfig, Method, AxiosResponse } from 'axios'
 import { AppAuthData } from './authdata'
-import { AxiosResponse } from 'axios'
 export type { AxiosResponse as Response } from 'axios'
 
 /**
@@ -23,6 +22,7 @@ export interface Bundle<InputData = Record<string, any>, AuthData = AppAuthData>
     page: number
   }
   rawRequest?: Partial<{
+    url: string
     method: Method
     querystring: string
     headers: { [x: string]: string }
@@ -30,6 +30,7 @@ export interface Bundle<InputData = Record<string, any>, AuthData = AppAuthData>
   }>
   cleanedRequest?:
   | Partial<{
+    url: string
     method: Method
     querystring: { [x: string]: string }
     headers: { [x: string]: string }
