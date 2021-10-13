@@ -96,7 +96,7 @@ export function createRequestFn (app: App, logger: Console['log'], bundle: Bundl
     if (
       some(config?.headers,
         (value, key) => key.toLowerCase() === 'content-type' && value === 'application/x-www-form-urlencoded'
-      )) {
+      ) && (isObjectLike(config.data) || isArray(config.data))) {
       config.data = qs.stringify(config.data)
     }
 
