@@ -120,8 +120,8 @@ export function createSnap (requester: SnapRequest, logger: Console['log']): Sna
 }
 
 export function handlebarsValue (value: any, data: any): any {
-  if (isPlainObject(value)) return mapValues(value, handlebarsValue)
-  if (isArray(value)) return map(value, handlebarsValue)
+  if (isPlainObject(value)) return mapValues(value, (v) => handlebarsValue(v, data))
+  if (isArray(value)) return map(value, (v) => handlebarsValue(v, data))
   if (isString(value)) return Handlebars.compile(value)(data)
   return value
 }

@@ -30,7 +30,7 @@
       "requireReturnDescription": true
     }],
     "import/no-extraneous-dependencies": [ "error",
-      { "devDependencies": ["**/*.test.js", "**/*.spec.js", "**/test/**/*.js"] }
+      { "devDependencies": ["**/*.test.ts", "**/*.spec.ts", "**/test/**/*.ts"] }
     ],
     "import/prefer-default-export": 0,
     "@typescript-eslint/strict-boolean-expressions": 0,

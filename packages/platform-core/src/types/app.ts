@@ -18,10 +18,4 @@ export interface App<AT = any> extends AppBase {
   before?: Array<(config: Partial<RequestFnConfig>) => RequestFnConfig>
   auth?: AppAuth<AT>
   resources?: Record<string, AppResource<AT>>
-  testAccount?: Omit<AT, 'type'>
-  testLogin?: {
-    username: string
-    password: string
-    url?: string
-  }
 }
