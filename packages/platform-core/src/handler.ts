@@ -18,7 +18,7 @@ export async function handler (app: App, version: string, data: HandlerEventData
   const logger = createLogger('NOTICE', app, version)
   const requester = createRequestFn(app, logger)
 
-  logger('platform__handler_start')
+  logger('platform__handler_start', { type, path, bundle })
 
   try {
     const val = get(app, path)
