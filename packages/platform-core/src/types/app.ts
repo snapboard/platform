@@ -16,8 +16,11 @@ export interface AppBase {
 }
 
 export interface App<AT = any> extends AppBase {
-  beforeRequest?: Array<(config: Partial<RequestFnConfig>, s: Snap, bundle: Bundle) => RequestFnConfig>
-  afterResponse?: Array<(response: AxiosResponse, s: Snap, bundle: Bundle) => any>
+  beforeRequest?: AppBeforeRequestMiddleware[]
+  afterResponse?: AppAfterResponseMiddleware[]
   auth?: AppAuth<AT>
   resources?: Record<string, AppResource<AT>>
 }
+
+export type AppBeforeRequestMiddleware = (config: Partial<RequestFnConfig>, s: Snap, bundle: Bundle) => Partial<RequestFnConfig>
+export type AppAfterResponseMiddleware = (response: AxiosResponse, s: Snap, bundle: Bundle) => AxiosResponse
