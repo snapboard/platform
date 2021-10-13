@@ -1,10 +1,11 @@
 import axios from 'axios'
 import Handlebars from 'handlebars'
-import { get, isFunction, mapValues, isString, isArray, isPlainObject, map, merge, forEach, isObjectLike } from 'lodash'
+import qs from 'qs'
+import { get, isFunction, mapValues, isString, isArray, isPlainObject, map, merge, forEach, some, isObjectLike } from 'lodash'
 import path from 'path'
 import fs from 'fs'
 import { App } from './types/app'
-import { SnapRequest, RequestFnConfig, RequestObjectConfig, Snap } from './types/requests'
+import { SnapRequest, RequestFnConfig, RequestObjectConfig, Snap, Bundle } from './types/requests'
 
 const pkg = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../package.json')).toString('utf-8'))
 
@@ -19,7 +20,6 @@ export async function handler (app: App, version: string, data: HandlerEventData
 
   const start = Date.now()
   const logger = createLogger('NOTICE', app, version)
-  const requester = createRequestFn(app, logger)
 
   logger('platform__handler_start', { type, path, bundle })
 
@@ -30,9 +30,9 @@ export async function handler (app: App, version: string, data: HandlerEventData
     if (val === undefined || val === null) {
       return null
     } else if (isFunction(val)) {
-      res = await val(createSnap(requester, logger), bundle)
+      res = await val(createSnap(createRequestFn(app, logger, bundle), logger), bundle)
     } else if (type === 'request' && isPlainObject(val) && val?.url) {
-      res = await callRequestObject(requester, val, getData(data))
+      res = await callRequestObject(createRequestFn(app, logger, bundle), val, getData(data))
     } else if (type === 'call') {
       res = handlebarsValue(val, getData(data))
     }
@@ -61,9 +61,10 @@ export function getData (data: HandlerEventData) {
   }
 }
 
-export async function callRequestObject (requester: SnapRequest, config: RequestObjectConfig, data: Record<string, any> = {}) {
-  const { transformResponse, ...otherConfig } = config
-  const mappedConfig = handlebarsValue(otherConfig, data) as RequestFnConfig
+export async function callRequestObject (requester: SnapRequest, config: RequestObjectConfig, idata: Record<string, any> = {}) {
+  const { transformResponse, data, body, ...otherConfig } = config
+
+  const mappedConfig = handlebarsValue({ ...otherConfig, data: data ?? body }, idata) as RequestFnConfig
 
   // Transform object values
   const resp = await requester(mappedConfig)
@@ -74,26 +75,41 @@ export async function callRequestObject (requester: SnapRequest, config: Request
   return resp
 }
 
-export function createRequestFn (app: App, logger: Console['log']): SnapRequest {
+export function createRequestFn (app: App, logger: Console['log'], bundle: Bundle): SnapRequest {
   // Generate the before processors
-  const befores = app.before
-  const beforeConfig: Partial<RequestFnConfig> = {}
-  if (befores) {
-    forEach(befores, (beforeFn) => {
-      merge(beforeConfig, beforeFn(beforeConfig))
-    })
-  }
+  return async function sendRequest (initialConfig: RequestFnConfig) {
+    logger('platform__request', { request: initialConfig })
 
-  return async function createRequestFn (requestConfig: RequestFnConfig) {
-    logger('platform__request', { request: requestConfig })
+    // Apply the beforeRequest middleware
+    let config: Partial<RequestFnConfig> = merge({ headers: {} }, initialConfig)
+    const snap: Snap = { log: logger }
+    if (app.beforeRequest) {
+      forEach(app.beforeRequest, (beforeFn) => {
+        config = beforeFn(config, snap, bundle)
+      })
+    }
 
-    const { data, body, ...rest } = requestConfig
-    const res = await axios(merge({}, beforeConfig, {
-      data: data || body,
-      ...rest
-    }))
+    // Use body, if no data
+    if (!config.data && config.body) config.data = config.body
 
-    logger('platform__request_response', { request: requestConfig, response: res })
+    // If content type is urlencoded
+    if (
+      some(config?.headers,
+        (value, key) => key.toLowerCase() === 'content-type' && value === 'application/x-www-form-urlencoded'
+      )) {
+      config.data = qs.stringify(config.data)
+    }
+
+    let res = await axios(config)
+    const { status, data } = res
+
+    logger('platform__request_response', { request: config, response: { status, data } })
+
+    if (app.afterResponse) {
+      forEach(app.afterResponse, (afterFn) => {
+        res = afterFn(res, snap, bundle)
+      })
+    }
 
     return res
   }

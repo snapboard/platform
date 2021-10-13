@@ -44,7 +44,7 @@ export interface Bundle<InputData = Record<string, any>, AuthData = AppAuthData>
 
 export interface Snap {
   log: Console['log']
-  request: SnapRequest
+  request?: SnapRequest
 }
 
 export type SnapRequest = (config: RequestFnConfig) => AxiosPromise<AxiosResponse>
