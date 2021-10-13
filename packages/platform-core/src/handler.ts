@@ -2,7 +2,7 @@ import axios from 'axios'
 import Handlebars from 'handlebars'
 import qs from 'qs'
 import { get, isFunction, mapValues, isString, isArray, isPlainObject, map, merge, forEach, some, isObjectLike } from 'lodash'
-import safeJsonStringify from 'safe-json-stringify'
+// import safeJsonStringify from 'safe-json-stringify'
 import path from 'path'
 import fs from 'fs'
 import { App } from './types/app'
@@ -42,7 +42,7 @@ export async function handler (app: App, version: string, data: HandlerEventData
       duration: Date.now() - start
     })
 
-    return safeJsonStringify(res)
+    return res
   } catch (err: any) {
     const errorLogger = createLogger('ERROR', app, version)
     errorLogger('platform__handler_end', {
