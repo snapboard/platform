@@ -25,6 +25,7 @@
     "@types/express": "^4.17.13",
     "@types/jest": "^27.0.2",
     "@types/lodash": "^4.14.175",
+    "@types/safe-json-stringify": "^1.1.2",
     "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
     "babel-plugin-module-resolver": "^4.1.0",
@@ -45,7 +46,8 @@
     "fs-extra": "^10.0.0",
     "handlebars": "^4.7.7",
     "lodash": "^4.17.21",
-    "qs": "^6.10.1"
+    "qs": "^6.10.1",
+    "safe-json-stringify": "^1.2.0"
   },
   "publishConfig": {
     "access": "public"

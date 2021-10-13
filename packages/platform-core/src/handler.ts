@@ -2,6 +2,7 @@ import axios from 'axios'
 import Handlebars from 'handlebars'
 import qs from 'qs'
 import { get, isFunction, mapValues, isString, isArray, isPlainObject, map, merge, forEach, some, isObjectLike } from 'lodash'
+import safeJsonStringify from 'safe-json-stringify'
 import path from 'path'
 import fs from 'fs'
 import { App } from './types/app'
@@ -41,7 +42,7 @@ export async function handler (app: App, version: string, data: HandlerEventData
       duration: Date.now() - start
     })
 
-    return res
+    return safeJsonStringify(res)
   } catch (err: any) {
     const errorLogger = createLogger('ERROR', app, version)
     errorLogger('platform__handler_end', {
@@ -69,10 +70,10 @@ export async function callRequestObject (requester: SnapRequest, config: Request
   // Transform object values
   const resp = await requester(mappedConfig)
 
-  if (!transformResponse) return resp
+  if (!transformResponse) return resp?.data
 
   // TODO: perform transform
-  return resp
+  return resp?.data
 }
 
 export function createRequestFn (app: App, logger: Console['log'], bundle: Bundle): SnapRequest {

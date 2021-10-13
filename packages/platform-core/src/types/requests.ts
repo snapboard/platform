@@ -11,8 +11,7 @@ export type AppFn<R=any, InputData=any> = (s: Snap, bundle: Bundle<InputData>) =
 export interface Bundle<InputData = Record<string, any>, AuthData = AppAuthData> {
   authData: AuthData
   inputData: InputData
-  inputDataRaw: { [x: string]: string }
-  meta: {
+  meta?: {
     isBulkRead: boolean
     isFillingDynamicDropdown: boolean
     isLoadingSample: boolean
@@ -28,18 +27,13 @@ export interface Bundle<InputData = Record<string, any>, AuthData = AppAuthData>
     headers: { [x: string]: string }
     content: string
   }>
-  cleanedRequest?:
-  | Partial<{
+  cleanedRequest?: Partial<{
     url: string
     method: Method
     querystring: { [x: string]: string }
     headers: { [x: string]: string }
     content: { [x: string]: string }
   }>
-  | any
-  outputData?: any
-  subscribeData?: { id: string }
-  targetUrl?: string
 }
 
 export interface Snap {
