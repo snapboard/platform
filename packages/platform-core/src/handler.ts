@@ -1,6 +1,6 @@
 import axios from 'axios'
 import Handlebars from 'handlebars'
-import { get, isFunction, mapValues, isString, isArray, isPlainObject, map, merge, forEach } from 'lodash'
+import { get, isFunction, mapValues, isString, isArray, isPlainObject, map, merge, forEach, isObjectLike } from 'lodash'
 import path from 'path'
 import fs from 'fs'
 import { App } from './types/app'
@@ -27,11 +27,13 @@ export async function handler (app: App, version: string, data: HandlerEventData
     const val = get(app, path)
     let res = null
 
-    if (isFunction(val)) {
+    if (val === undefined || val === null) {
+      return null
+    } else if (isFunction(val)) {
       res = await val(createSnap(requester, logger), bundle)
-    } else if (type === 'request') {
+    } else if (type === 'request' && isPlainObject(val)) {
       res = await callRequestObject(requester, val, getData(data))
-    } else {
+    } else if (type === 'call') {
       res = handlebarsValue(val, getData(data))
     }
 
