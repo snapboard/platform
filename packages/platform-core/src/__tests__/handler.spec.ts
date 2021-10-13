@@ -1,4 +1,5 @@
-import { handlebarsValue } from '../handler'
+import { createLogger, handlebarsValue } from '../handler'
+import { App } from '../types/app'
 
 describe('handler', () => {
   describe('handlebarsValue', () => {
@@ -38,6 +39,27 @@ describe('handler', () => {
         b: 2,
         c: { d: 'exists' }
       })
+    })
+  })
+
+  describe('createLogger', () => {
+    test('creates logger default values', () => {
+      const consoleLogMock = jest.spyOn(console, 'log').mockImplementation()
+
+      const logger = createLogger('LOG', { id: 'typeform' } as any, '1.0.1')
+      logger('important message')
+
+      expect(consoleLogMock).toBeCalledTimes(1)
+      expect(JSON.parse(consoleLogMock.mock.calls[0][0])).toMatchObject({
+        severity: 'LOG',
+        message: 'important message',
+        params: [],
+        appId: 'typeform',
+        version: '1.0.1',
+        platformVersion: expect.stringMatching(/^\d+\.\d+\.\d+$/)
+      })
+
+      consoleLogMock.mockRestore()
     })
   })
 })

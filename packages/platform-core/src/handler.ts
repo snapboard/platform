@@ -1,9 +1,12 @@
 import axios from 'axios'
 import Handlebars from 'handlebars'
 import { get, isFunction, mapValues, isString, isArray, isPlainObject, map, merge, forEach } from 'lodash'
-import getPackageVersion from '@jsbits/get-package-version'
+import path from 'path'
+import fs from 'fs'
 import { App } from './types/app'
 import { SnapRequest, RequestFnConfig, RequestObjectConfig, Snap } from './types/requests'
+
+const pkg = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../package.json')).toString('utf-8'))
 
 export interface HandlerEventData {
   type?: 'request'|'call'
@@ -96,6 +99,7 @@ export function createRequestFn (app: App, logger: Console['log']): SnapRequest 
 
 export function createLogger (severity: string, app: App, version: string) {
   const globalLogFields: Record<string, string> = {}
+  const platformVersion = pkg?.version
 
   return function logger (message: any, ...params: any[]) {
     const entry = {
@@ -104,7 +108,7 @@ export function createLogger (severity: string, app: App, version: string) {
       params,
       appId: app?.id,
       version,
-      platformVersion: getPackageVersion(),
+      platformVersion,
       ...globalLogFields
     }
 
