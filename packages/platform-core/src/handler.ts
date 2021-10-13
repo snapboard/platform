@@ -31,7 +31,7 @@ export async function handler (app: App, version: string, data: HandlerEventData
       return null
     } else if (isFunction(val)) {
       res = await val(createSnap(requester, logger), bundle)
-    } else if (type === 'request' && isPlainObject(val)) {
+    } else if (type === 'request' && isPlainObject(val) && val?.url) {
       res = await callRequestObject(requester, val, getData(data))
     } else if (type === 'call') {
       res = handlebarsValue(val, getData(data))
