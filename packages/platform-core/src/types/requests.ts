@@ -1,5 +1,6 @@
 import { AxiosPromise, AxiosRequestConfig, Method, AxiosResponse } from 'axios'
 import { AppAuthData } from './authdata'
+import { FilterBasic } from './filter'
 export type { AxiosResponse as Response } from 'axios'
 
 /**
@@ -8,18 +9,44 @@ export type { AxiosResponse as Response } from 'axios'
 export type AppRequest<R=any, InputData=any> = AppFn<InputData, R>|RequestObjectConfig
 export type AppFn<R=any, InputData=any> = (s: Snap, bundle: Bundle<InputData>) => Promise<R>
 
-export interface Bundle<InputData = Record<string, any>, AuthData = AppAuthData> {
-  authData: AuthData
+export interface Bundle<AuthData = AppAuthData, InputData = Record<string, any>, P=any, C=any> {
+  authData?: AuthData
+
+  /**
+   * Will have the inputs requested in the importer config - otherwise is an empty object
+   */
   inputData: InputData
+
+  limit?: number
+
+  /**
+   * The page value returned when the last handler was called. This value is passed to
+   * the next run of the handler in the same sync cycle. It is reset to null and the start
+   * of each sync cycle.
+   */
+  page?: P
+
+  /**
+   * The cursor value returned when the last handler was called (for partial updates).
+   * This value remains constant during a sync cycle.
+   */
+  cursor?: C
+
+  /**
+   * A set of key/value filters
+   */
+  filters?: FilterBasic[]
+
+  /**
+   * A basic search (optionally implamented by importer)
+   */
+  search?: string
+
   meta?: {
-    isBulkRead: boolean
-    isFillingDynamicDropdown: boolean
-    isLoadingSample: boolean
-    isPopulatingDedupe: boolean
-    isTestingAuth: boolean
-    limit: number
-    page: number
+    isFillingDynamicDropdown?: boolean
+    isLoadingSample?: boolean
   }
+
   rawRequest?: Partial<{
     url: string
     method: Method

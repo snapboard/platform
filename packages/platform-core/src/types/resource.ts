@@ -1,7 +1,7 @@
 import { Input } from './inputs'
-import { FilterBasic } from './filter'
 import { Column } from './column'
 import { AppAuthData } from './authdata'
+import { Snap, Bundle } from './requests'
 
 export interface AppResourceBase {
   /**
@@ -59,9 +59,10 @@ export interface AppResourceBase {
   custom?: 'none'|'partial'|'full'
 
   /**
-   * List of non-base oauth scopes required for this importer to work.
+   * List of additional scopes (beyond defined in the auth section),
+   * required for this auth
    */
-  requiredScopes?: string[]
+  additionalScopes?: string[]
 
   /**
    * Key/value list of columns and their types
@@ -92,63 +93,13 @@ export interface AppResource<AuthData=AppAuthData, InputData=any, P=any, C=any> 
   testInput?: InputData
 }
 
-export type AppResourceHandler<AuthData, InputData=any, P=any, C=any> = (params: AppResourceHandlerParams<AuthData, InputData, P, C>) => Promise<AppResourceHandlerResponse>
-
-export interface AppResourceHandlerParams<AuthData=AppAuthData, InputData=any, P=any, C=any> {
-  /**
-   * Authentication for an account, so an authenticated request can be made.
-   */
-  authData: AuthData
-
-  /**
-   * Will have the inputs requested in the importer config - otherwise is an empty object
-   */
-  inputData: InputData
-
-  /**
-   * The page value returned when the last handler was called. This value is passed to
-   * the next run of the handler in the same sync cycle. It is reset to null and the start
-   * of each sync cycle.
-   */
-  page: P
-
-  /**
-   * The cursor value returned when the last handler was called (for partial updates).
-   * This value remains constant during a sync cycle.
-   */
-  cursor: C
-
-  instanceId: string
-
-  /**
-   * A set of key/value filters
-   */
-  filters?: FilterBasic[]
-
-  /**
-   * A query for dynamic sources
-   */
-  // query: SourceMet
-
-  /**
-   * A basic search (optionally implamented by importer)
-   */
-  search?: string
-
-  limit?: number
-}
+export type AppResourceHandler<AuthData, InputData=any, P=any, C=any> = (s: Snap, params: Bundle<AuthData, InputData, P, C>) => Promise<AppResourceHandlerResponse>
 
 export interface AppResourceHandlerResponse<P=any, C=any> {
   /**
    * Data to be set - can be new or update
    */
   data: any[]
-
-  /**
-  * Raw value returned from endpoint - useful for debugging and snapshot validation
-  * that the format of the response has not changed since last test
-  */
-  raw?: any
 
   /**
    * If true, another call to the handler will be scheduled in a few seconds
