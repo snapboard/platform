@@ -68,7 +68,7 @@ export interface Snap {
   request?: SnapRequest
 }
 
-export type SnapRequest = (config: RequestFnConfig) => AxiosPromise<AxiosResponse>
+export type SnapRequest = (config: RequestFnConfig) => Promise<AxiosResponse>
 
 export interface RequestFnConfig extends AxiosRequestConfig {
   url: string
