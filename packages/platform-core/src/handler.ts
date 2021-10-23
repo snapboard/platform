@@ -1,7 +1,8 @@
 import axios from 'axios'
 import Handlebars from 'handlebars'
 import qs from 'qs'
-import { get, isFunction, mapValues, isString, isArray, isPlainObject, map, merge, forEach, some, isObjectLike } from 'lodash'
+import objectPath from 'object-path'
+import { isFunction, mapValues, isString, isArray, isPlainObject, map, merge, forEach, some, isObjectLike } from 'lodash'
 // import safeJsonStringify from 'safe-json-stringify'
 import path from 'path'
 import fs from 'fs'
@@ -12,7 +13,7 @@ const pkg = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../package.json'
 
 export interface HandlerEventData {
   type?: 'request'|'call'
-  path: string
+  path: string|string[]
   bundle: any
 }
 
@@ -25,7 +26,7 @@ export async function handler (app: App, version: string, data: HandlerEventData
   logger('platform__handler_start', { type, path, bundle })
 
   try {
-    const val = get(app, path)
+    const val = objectPath.get(app, path)
     let res = null
 
     if (val === undefined || val === null) {
