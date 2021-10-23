@@ -6,8 +6,8 @@ export type { AxiosResponse as Response } from 'axios'
 /**
  * Either a fn or request config object
  */
-export type AppRequest<R=any, InputData=any> = AppFn<InputData, R>|RequestObjectConfig
-export type AppFn<R=any, InputData=any> = (s: Snap, bundle: Bundle<InputData>) => Promise<R>
+export type AppRequest<R=any, AuthData=any, InputData=any> = AppFn<AuthData, InputData, R>|RequestObjectConfig
+export type AppFn<AuthData=any, InputData=any, R=any> = (s: Snap, bundle: Bundle<AuthData,InputData>) => Promise<R>
 
 export interface Bundle<AuthData = AppAuthData, InputData = Record<string, any>, P=any, C=any> {
   authData?: AuthData
