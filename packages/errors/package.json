@@ -1,10 +1,10 @@
 {
-  "name": "@snapboard/util",
+  "name": "@snapboard/errors",
   "version": "0.2.0",
-  "description": "Common utilities for Snapboard",
+  "description": "Errors for Snapboard",
   "main": "dist/index.js",
   "author": "Calum Moore",
-  "repository": "https://github.com/snapboard/platform/tree/main/packages/core",
+  "repository": "https://github.com/snapboard/platform/tree/main/packages/errors",
   "license": "MIT",
   "private": false,
   "scripts": {
