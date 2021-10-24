@@ -8,10 +8,10 @@ export interface SnapErrorBase {
   log?: boolean
 
   /** Data that can be presented to the user */
-  data?: Record<string, any>
+  data?: any
 
   /** Internal data, not to be shared externally */
-  internal?: Record<string, any>
+  internal?: any
 
   /** Original error message before normalization */
   originalError?: { name: string, message: string, stack: string }
