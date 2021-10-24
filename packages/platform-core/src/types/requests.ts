@@ -1,7 +1,7 @@
-import { AxiosPromise, AxiosRequestConfig, Method, AxiosResponse } from 'axios'
+import { SnapError } from '@snapboard/errors'
+import { AxiosRequestConfig, Method, AxiosResponse } from 'axios'
 import { AppAuthData } from './authdata'
 import { FilterBasic } from './filter'
-import { SnapError } from '../createError'
 export type { AxiosResponse as Response } from 'axios'
 
 /**

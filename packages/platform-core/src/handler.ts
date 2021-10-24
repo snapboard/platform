@@ -7,7 +7,7 @@ import path from 'path'
 import fs from 'fs'
 import { App } from './types/app'
 import { SnapRequest, RequestFnConfig, RequestObjectConfig, Snap, Bundle } from './types/requests'
-import { createError, SnapError } from './createError'
+import { createError, SnapError } from '@snapboard/errors'
 import { retryAfterSeconds } from './util'
 
 const pkg = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../package.json')).toString('utf-8'))
@@ -85,9 +85,7 @@ export async function callFunctionValue (fn: (snap: Snap, bundle: any) => any, s
     return fn(snap, bundle)
   } catch (err: any) {
     if (err instanceof SnapError) throw err
-    const snapError = createError('apps/internal', { message: err?.message })
-    snapError.originalError = err
-    throw err
+    throw createError('apps/internal', { message: err?.message, originalError: err })
   }
 }
 
