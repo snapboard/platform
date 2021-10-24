@@ -1,13 +1,14 @@
 import { AxiosPromise, AxiosRequestConfig, Method, AxiosResponse } from 'axios'
 import { AppAuthData } from './authdata'
 import { FilterBasic } from './filter'
+import { SnapError } from '../createError'
 export type { AxiosResponse as Response } from 'axios'
 
 /**
  * Either a fn or request config object
  */
 export type AppRequest<R=any, AuthData=any, InputData=any> = AppFn<AuthData, InputData, R>|RequestObjectConfig
-export type AppFn<AuthData=any, InputData=any, R=any> = (s: Snap, bundle: Bundle<AuthData,InputData>) => Promise<R>
+export type AppFn<AuthData=any, InputData=any, R=any> = (s: Snap, bundle: Bundle<AuthData, InputData>) => Promise<R>
 
 export interface Bundle<AuthData = AppAuthData, InputData = Record<string, any>, P=any, C=any> {
   authData?: AuthData
@@ -66,6 +67,13 @@ export interface Bundle<AuthData = AppAuthData, InputData = Record<string, any>,
 export interface Snap {
   log: Console['log']
   request?: SnapRequest
+  errors: {
+    Error: (message: string) => SnapError
+    HaltedError: (message: string) => SnapError
+    ExpiredAuthError: (message: string) => SnapError
+    RefreshAuthError: (message: string) => SnapError
+    RateLimitError: (message: string, retryTimeout: number,) => SnapError
+  }
 }
 
 export type SnapRequest = (config: RequestFnConfig) => Promise<AxiosResponse>
@@ -73,8 +81,11 @@ export type SnapRequest = (config: RequestFnConfig) => Promise<AxiosResponse>
 export interface RequestFnConfig extends AxiosRequestConfig {
   url: string
 
-  /* Alias for data */
+  /** Alias for data */
   body?: any
+
+  /** Do not automatically throw errors based on status code */
+  skipThrowForStatus?: boolean
 }
 
 export interface RequestObjectConfig extends Omit<

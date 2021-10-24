@@ -1,13 +1,14 @@
-import axios from 'axios'
+import axios, { AxiosResponse } from 'axios'
 import Handlebars from 'handlebars'
 import qs from 'qs'
 import objectPath from 'object-path'
 import { isFunction, mapValues, isString, isArray, isPlainObject, map, merge, forEach, some, isObjectLike } from 'lodash'
-// import safeJsonStringify from 'safe-json-stringify'
 import path from 'path'
 import fs from 'fs'
 import { App } from './types/app'
 import { SnapRequest, RequestFnConfig, RequestObjectConfig, Snap, Bundle } from './types/requests'
+import { createError, SnapError } from './createError'
+import { retryAfterSeconds } from './util'
 
 const pkg = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../package.json')).toString('utf-8'))
 
@@ -18,23 +19,27 @@ export interface HandlerEventData {
 }
 
 export async function handler (app: App, version: string, data: HandlerEventData) {
-  const { type, path, bundle } = data
-
   const start = Date.now()
-  const logger = createLogger('NOTICE', app, version)
-
-  logger('platform__handler_start', { type, path, bundle })
 
   try {
+    const { type, path, bundle } = data
+
+    const logger = createLogger('NOTICE', app, version)
+
+    const requester = createRequestFn(app, logger, bundle)
+    const snap = createSnap(logger, requester)
+
+    logger('platform__handler_start', { type, path, bundle })
+
     const val = objectPath.get(app, path)
     let res = null
 
     if (val === undefined || val === null) {
-      return null
+      throw createError('not-found')
     } else if (isFunction(val)) {
-      res = await val(createSnap(createRequestFn(app, logger, bundle), logger), bundle)
+      res = callFunctionValue(val, snap, bundle)
     } else if (type === 'request' && isPlainObject(val) && val?.url) {
-      res = await callRequestObject(createRequestFn(app, logger, bundle), val, getData(data))
+      res = await callRequestObject(requester, val, getData(data))
     } else if (type === 'call') {
       res = handlebarsValue(val, getData(data))
     }
@@ -43,14 +48,26 @@ export async function handler (app: App, version: string, data: HandlerEventData
       duration: Date.now() - start
     })
 
-    return res
+    return {
+      data: res,
+      error: null
+    }
   } catch (err: any) {
     const errorLogger = createLogger('ERROR', app, version)
+
     errorLogger('platform__handler_end', {
       duration: Date.now() - start
     })
 
-    throw err
+    return {
+      data: null,
+      error: err instanceof SnapError
+        ? err.toJSON()
+        : createError('internal', {
+          message: err?.message,
+          originalError: err
+        }).toJSON()
+    }
   }
 }
 
@@ -60,6 +77,17 @@ export function getData (data: HandlerEventData) {
     process: {
       env: process.env
     }
+  }
+}
+
+export async function callFunctionValue (fn: (snap: Snap, bundle: any) => any, snap: Snap, bundle: any) {
+  try {
+    return fn(snap, bundle)
+  } catch (err: any) {
+    if (err instanceof SnapError) throw err
+    const snapError = createError('apps/internal', { message: err?.message })
+    snapError.originalError = err
+    throw err
   }
 }
 
@@ -84,7 +112,7 @@ export function createRequestFn (app: App, logger: Console['log'], bundle: Bundl
 
     // Apply the beforeRequest middleware
     let config: Partial<RequestFnConfig> = merge({ headers: {} }, initialConfig)
-    const snap: Snap = { log: logger }
+    const snap: Snap = createSnap(logger)
     if (app.beforeRequest) {
       forEach(app.beforeRequest, (beforeFn) => {
         config = beforeFn(config, snap, bundle)
@@ -102,7 +130,22 @@ export function createRequestFn (app: App, logger: Console['log'], bundle: Bundl
       config.data = qs.stringify(config.data)
     }
 
-    let res = await axios(config)
+    let res: AxiosResponse
+    let error: any
+
+    try {
+      res = await axios(config)
+    } catch (err: any) {
+      error = err
+      if (err.response) {
+        res = err.resonse
+      } else if (err.request) {
+        throw createError('apps/invalid-connection')
+      } else {
+        throw createError('internal', { message: 'Unable to send axios request' })
+      }
+    }
+
     const { status, data } = res
 
     logger('platform__request_response', { request: config, response: { status, data } })
@@ -110,6 +153,35 @@ export function createRequestFn (app: App, logger: Console['log'], bundle: Bundl
     if (app.afterResponse) {
       forEach(app.afterResponse, (afterFn) => {
         res = afterFn(res, snap, bundle)
+      })
+    }
+
+    if (!config.skipThrowForStatus && status >= 200 && status < 300) {
+      if (status === 429) {
+        const retryTimeout = retryAfterSeconds(res)
+        throw createError('apps/rate-limit', {
+          internal: { retryTimeout },
+          data: res.data
+        })
+      }
+
+      if (status === 403) {
+        throw createError('auth/invalid-auth', {
+          message: error.message,
+          data: res.data
+        })
+      }
+
+      if (status === 401) {
+        throw createError('auth/missing-auth', {
+          message: error.message,
+          data: res.data
+        })
+      }
+
+      throw createError('apps/internal', {
+        message: error?.message,
+        data: res.data
       })
     }
 
@@ -136,10 +208,20 @@ export function createLogger (severity: string, app: App, version: string) {
   }
 }
 
-export function createSnap (requester: SnapRequest, logger: Console['log']): Snap {
+export function createSnap (logger: Console['log'], requester?: SnapRequest): Snap {
   return {
     log: logger,
-    request: requester
+    request: requester,
+    errors: {
+      Error: (message: string, immedieteStop?: boolean) => createError('apps/internal', { message, internal: { immedieteStop } }),
+      HaltedError: (message: string) => createError('apps/halted', { message }),
+      ExpiredAuthError: (message: string) => createError('auth/invalid-auth', { message }),
+      RefreshAuthError: (message: string) => createError('auth/refresh-required', { message }),
+      RateLimitError: (message: string, retryTimeout: number) => createError('apps/rate-limit', {
+        message,
+        internal: { retryTimeout }
+      })
+    }
   }
 }
 
