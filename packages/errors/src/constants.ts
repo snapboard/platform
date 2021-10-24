@@ -24,5 +24,9 @@ export const ERROR_REASONS = {
   'apps/halted': { code: 'cancelled', message: 'Process was terminated early' },
   'apps/rate-limit': { code: 'resource-exhausted', message: 'Exceeded rate limit' },
   'apps/invalid-connection': { code: 'internal', message: 'No response received from server' },
-  'apps/internal': { code: 'internal', message: 'An internal error occured in the app handler' }
+  'apps/internal': { code: 'internal', message: 'An internal error occured in the app handler' },
+  'apps/redeploy-version': { code: 'already-exists', message: 'You cannot redeploy a previously published version' },
+  'apps/not-found': { code: 'not-found', message: 'App does not exist' },
+  'oauth/not-configured': { code: 'failed-precondition', message: 'App is not configured for oauth' },
+  'oauth/mismatch': { code: 'failed-precondition', message: 'Mismatch between requested account and account selected during authentication' }
 }

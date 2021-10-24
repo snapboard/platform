@@ -49,8 +49,13 @@ export class SnapError extends Error {
     this.reason = reason
 
     const { originalError, message, ...error } = input ?? {}
+    const reasonData = ERROR_REASONS[reason]
 
     this.error = error || {}
+
+    if (this.error && !this.error.code && reasonData?.code) {
+      this.error.code = reasonData.code as keyof typeof ERROR_CODES
+    }
 
     if (originalError) {
       this.stack = originalError.stack
