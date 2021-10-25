@@ -1,7 +1,7 @@
 import { Input } from './inputs'
 import { Column } from './column'
 import { AppAuthData } from './authdata'
-import { Snap, Bundle } from './requests'
+import { Snap, Bundle, AppRequest } from './requests'
 
 export interface AppResourceBase {
   /**
@@ -90,6 +90,11 @@ export interface AppResource<AuthData=AppAuthData, InputData=any, C=any> extends
    */
   handler: AppResourceHandler<AuthData, InputData, C>
 
+  /**
+   * Key/value list of columns and their types
+   */
+  dynamicColumns: AppRequest
+
   testInput?: InputData
 }
 
@@ -113,17 +118,8 @@ export interface AppResourceHandlerResponse<C=any> {
   reschedule?: number
 
   /**
-   * This value will be passed to the next call of handler as `cursor` prop. This is used for
-   * partial updates (allowing for only changes to be retrieved for each sync cycle).
-   * Cursor/partial updates should only be used when:
-   *   - Data cannot be deleted
-   *   - Data cannot be updated or API identifies updated records (and allows filtering for updates)
-   *   - API identifies new records (and allows filtering for them)
+   * This value will be passed to the next call of handler as `cursor` prop to save fetching already retrieved records.
+   * This is an optimization, if duplicates are returned they will still be handled correctly.
    */
   cursor?: C
-
-  /**
-   * Overide the default primary key.
-   */
-  primaryKey?: string
 }
