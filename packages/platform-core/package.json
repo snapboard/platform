@@ -1,6 +1,6 @@
 {
   "name": "@snapboard/platform-core",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "description": "Platform wrapper for Snapboard",
   "main": "dist/index.js",
   "author": "Calum Moore",
@@ -41,7 +41,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.15.4",
-    "@snapboard/errors": "^0.2.3",
+    "@snapboard/errors": "^0.2.8",
     "axios": "^0.23.0",
     "fs-extra": "^10.0.0",
     "handlebars": "^4.7.7",
