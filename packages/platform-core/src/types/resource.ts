@@ -76,7 +76,7 @@ export interface AppResourceBase {
   visibility: 'hidden'|'below'|'above'
 }
 
-export interface AppResource<AuthData=AppAuthData, InputData=any, P=any, C=any> extends AppResourceBase {
+export interface AppResource<AuthData=AppAuthData, InputData=any, C=any> extends AppResourceBase {
   /**
    * A set of fields to ignore when discovering new fields for an API
    */
@@ -88,14 +88,14 @@ export interface AppResource<AuthData=AppAuthData, InputData=any, P=any, C=any> 
    * can be up to every minute. Any error you throw here will be displayed
    * to the user.
    */
-  handler: AppResourceHandler<AuthData, InputData, P, C>
+  handler: AppResourceHandler<AuthData, InputData, C>
 
   testInput?: InputData
 }
 
-export type AppResourceHandler<AuthData, InputData=any, P=any, C=any> = (s: Snap, params: Bundle<AuthData, InputData, P, C>) => Promise<AppResourceHandlerResponse>
+export type AppResourceHandler<AuthData, InputData=any, C=any> = (s: Snap, params: Bundle<AuthData, InputData, C>) => Promise<AppResourceHandlerResponse>
 
-export interface AppResourceHandlerResponse<P=any, C=any> {
+export interface AppResourceHandlerResponse<C=any> {
   /**
    * Data to be set - can be new or update
    */
@@ -121,11 +121,6 @@ export interface AppResourceHandlerResponse<P=any, C=any> {
    *   - API identifies new records (and allows filtering for them)
    */
   cursor?: C
-
-  /**
-   * The page cursor returned when the last handler was called.
-   */
-  page?: P
 
   /**
    * Overide the default primary key.

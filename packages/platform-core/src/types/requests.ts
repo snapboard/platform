@@ -10,7 +10,7 @@ export type { AxiosResponse as Response } from 'axios'
 export type AppRequest<R=any, AuthData=any, InputData=any> = AppFn<AuthData, InputData, R>|RequestObjectConfig
 export type AppFn<AuthData=any, InputData=any, R=any> = (s: Snap, bundle: Bundle<AuthData, InputData>) => Promise<R>
 
-export interface Bundle<AuthData = AppAuthData, InputData = Record<string, any>, P=any, C=any> {
+export interface Bundle<AuthData = AppAuthData, InputData = Record<string, any>, C=any> {
   authData?: AuthData
 
   /**
@@ -19,13 +19,6 @@ export interface Bundle<AuthData = AppAuthData, InputData = Record<string, any>,
   inputData: InputData
 
   limit?: number
-
-  /**
-   * The page value returned when the last handler was called. This value is passed to
-   * the next run of the handler in the same sync cycle. It is reset to null and the start
-   * of each sync cycle.
-   */
-  page?: P
 
   /**
    * The cursor value returned when the last handler was called (for partial updates).
