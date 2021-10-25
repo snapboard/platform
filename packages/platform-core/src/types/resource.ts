@@ -93,7 +93,7 @@ export interface AppResource<AuthData=AppAuthData, InputData=any, Cursor=any> ex
   /**
    * Key/value list of columns and their types but dynamically generated
    */
-  dynamicColumns: AppRequest<Record<string, Column>, AuthData, InputData, Cursor>
+  dynamicColumns?: AppRequest<Record<string, Column>, AuthData, InputData, Cursor>
 
   testInput?: InputData
 }
