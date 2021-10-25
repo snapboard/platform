@@ -6,7 +6,6 @@
   "author": "Calum Moore",
   "repository": "https://github.com/snapboard/platform/tree/main/packages/errors",
   "license": "MIT",
-  "private": false,
   "scripts": {
     "clean": "rimraf dist/*",
     "build": "yarn clean && yarn build:js && yarn build:types",

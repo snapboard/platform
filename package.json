@@ -5,7 +5,9 @@
   "repository": "https://github.com/snapboard/platform",
   "license": "UNLICENSED",
   "private": true,
-  "workspaces": ["packages/*"],
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "clean": "rimraf ./node_modules ./packages/*/node_modules",
     "build": "yarn lerna run build",
@@ -16,7 +18,5 @@
     "lerna": "^4.0.0",
     "npm-run-all": "^4.1.5",
     "rimraf": "^3.0.2"
-  },
-  "devDependencies": {
   }
 }
