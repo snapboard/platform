@@ -76,7 +76,7 @@ export interface AppResourceBase {
   visibility: 'hidden'|'below'|'above'
 }
 
-export interface AppResource<AuthData=AppAuthData, InputData=any, C=any> extends AppResourceBase {
+export interface AppResource<AuthData=AppAuthData, InputData=any, Cursor=any> extends AppResourceBase {
   /**
    * A set of fields to ignore when discovering new fields for an API
    */
@@ -88,19 +88,19 @@ export interface AppResource<AuthData=AppAuthData, InputData=any, C=any> extends
    * can be up to every minute. Any error you throw here will be displayed
    * to the user.
    */
-  handler: AppResourceHandler<AuthData, InputData, C>
+  handler: AppResourceHandler<AuthData, InputData, Cursor>
 
   /**
-   * Key/value list of columns and their types
+   * Key/value list of columns and their types but dynamically generated
    */
-  dynamicColumns: AppRequest
+  dynamicColumns: AppRequest<Column[], AuthData, InputData, Cursor>
 
   testInput?: InputData
 }
 
-export type AppResourceHandler<AuthData, InputData=any, C=any> = (s: Snap, params: Bundle<AuthData, InputData, C>) => Promise<AppResourceHandlerResponse>
+export type AppResourceHandler<AuthData, InputData=any, Cursor=any> = (s: Snap, params: Bundle<AuthData, InputData, Cursor>) => Promise<AppResourceHandlerResponse>
 
-export interface AppResourceHandlerResponse<C=any> {
+export interface AppResourceHandlerResponse<Cursor=any> {
   /**
    * Data to be set - can be new or update
    */
@@ -121,5 +121,5 @@ export interface AppResourceHandlerResponse<C=any> {
    * This value will be passed to the next call of handler as `cursor` prop to save fetching already retrieved records.
    * This is an optimization, if duplicates are returned they will still be handled correctly.
    */
-  cursor?: C
+  cursor?: Cursor
 }

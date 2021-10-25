@@ -7,10 +7,10 @@ export type { AxiosResponse as Response } from 'axios'
 /**
  * Either a fn or request config object
  */
-export type AppRequest<R=any, AuthData=any, InputData=any> = AppFn<AuthData, InputData, R>|RequestObjectConfig
-export type AppFn<AuthData=any, InputData=any, R=any> = (s: Snap, bundle: Bundle<AuthData, InputData>) => Promise<R>
+export type AppRequest<Response=any, AuthData=any, InputData=any, Cursor=any> = AppFn<Response, AuthData, InputData, Cursor>|RequestObjectConfig
+export type AppFn<Response=any, AuthData=any, InputData=any, Cursor=any> = (s: Snap, bundle: Bundle<AuthData, InputData, Cursor>) => Promise<Response>
 
-export interface Bundle<AuthData = AppAuthData, InputData = Record<string, any>, C=any> {
+export interface Bundle<AuthData = AppAuthData, InputData = Record<string, any>, Cursor=any> {
   authData?: AuthData
 
   /**
@@ -24,7 +24,7 @@ export interface Bundle<AuthData = AppAuthData, InputData = Record<string, any>,
    * The cursor value returned when the last handler was called (for partial updates).
    * This value remains constant during a sync cycle.
    */
-  cursor?: C
+  cursor?: Cursor
 
   /**
    * A set of key/value filters
