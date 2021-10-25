@@ -37,7 +37,7 @@ export async function handler (app: App, version: string, data: HandlerEventData
     if (val === undefined || val === null) {
       throw createError('not-found')
     } else if (isFunction(val)) {
-      res = callFunctionValue(val, snap, bundle)
+      res = await callFunctionValue(val, snap, bundle)
     } else if (type === 'request' && isPlainObject(val) && val?.url) {
       res = await callRequestObject(requester, val, getData(data))
     } else if (type === 'call') {
@@ -171,7 +171,7 @@ export function createRequestFn (app: App, logger: Console['log'], bundle: Bundl
       }
 
       if (status === 401) {
-        throw createError('auth/missing-auth', {
+        throw createError('auth/refresh-required', {
           message: error.message,
           data: res.data
         })
