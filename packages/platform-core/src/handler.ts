@@ -154,7 +154,7 @@ export function createRequestFn (app: App, logger: Console['log'], bundle: Bundl
       })
     }
 
-    if (!config.skipThrowForStatus && status >= 200 && status < 300) {
+    if (!config.skipThrowForStatus && status > 300) {
       if (status === 429) {
         const retryTimeout = retryAfterSeconds(res)
         throw createError('apps/rate-limit', {
