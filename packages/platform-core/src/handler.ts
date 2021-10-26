@@ -3,11 +3,12 @@ import Handlebars from 'handlebars'
 import qs from 'qs'
 import objectPath from 'object-path'
 import { isFunction, mapValues, isString, isArray, isPlainObject, map, merge, forEach, some, isObjectLike } from 'lodash'
+import { createError, SnapError } from '@snapboard/errors'
 import path from 'path'
 import fs from 'fs'
 import { App } from './types/app'
 import { SnapRequest, RequestFnConfig, RequestObjectConfig, Snap, Bundle } from './types/requests'
-import { createError, SnapError } from '@snapboard/errors'
+
 import { retryAfterSeconds } from './util'
 
 const pkg = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../package.json')).toString('utf-8'))
@@ -154,7 +155,7 @@ export function createRequestFn (app: App, logger: Console['log'], bundle: Bundl
       })
     }
 
-    if (!config.skipThrowForStatus && status > 300) {
+    if (!config.skipThrowForStatus && status >= 300) {
       if (status === 429) {
         const retryTimeout = retryAfterSeconds(res)
         throw createError('apps/rate-limit', {
