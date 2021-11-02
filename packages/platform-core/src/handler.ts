@@ -137,7 +137,7 @@ export function createRequestFn (app: App, logger: Console['log'], bundle: Bundl
     } catch (err: any) {
       error = err
       if (err.response) {
-        res = err.resonse
+        res = err.response
       } else if (err.request) {
         throw createError('apps/invalid-connection')
       } else {
