@@ -17,13 +17,14 @@ export interface HandlerEventData {
   type?: 'request'|'call'
   path: string|string[]
   bundle: any
+  required?: boolean
 }
 
 export async function handler (app: App, version: string, data: HandlerEventData) {
   const start = Date.now()
 
   try {
-    const { type, path, bundle } = data
+    const { type, path, bundle, required } = data
 
     const logger = createLogger('NOTICE', app, version)
 
@@ -35,7 +36,7 @@ export async function handler (app: App, version: string, data: HandlerEventData
     const val = objectPath.get(app, path)
     let res = null
 
-    if (val === undefined || val === null) {
+    if ((val === undefined || val === null) && required) {
       throw createError('not-found')
     } else if (isFunction(val)) {
       res = await callFunctionValue(val, snap, bundle)
