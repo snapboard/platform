@@ -166,14 +166,14 @@ export function createRequestFn (app: App, logger: Console['log'], bundle: Bundl
       }
 
       if (status === 403) {
-        throw createError('auth/invalid-auth', {
+        throw createError('apps/invalid-auth', {
           message: error.message,
           data: res.data
         })
       }
 
       if (status === 401) {
-        throw createError('auth/refresh-required', {
+        throw createError('apps/refresh-required', {
           message: error.message,
           data: res.data
         })
@@ -221,8 +221,8 @@ export function createBeforeSnap (logger: Console['log']): BeforeSnap {
     errors: {
       Error: (message: string, immedieteStop?: boolean) => createError('apps/internal', { message, internal: { immedieteStop } }),
       HaltedError: (message: string) => createError('apps/halted', { message }),
-      ExpiredAuthError: (message: string) => createError('auth/invalid-auth', { message }),
-      RefreshAuthError: (message: string) => createError('auth/refresh-required', { message }),
+      ExpiredAuthError: (message: string) => createError('apps/invalid-auth', { message }),
+      RefreshAuthError: (message: string) => createError('apps/refresh-required', { message }),
       RateLimitError: (message: string, retryTimeout: number) => createError('apps/rate-limit', {
         message,
         internal: { retryTimeout }

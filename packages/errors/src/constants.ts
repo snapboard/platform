@@ -60,4 +60,5 @@ export const ERROR_REASONS = {
 
   'oauth/not-configured': { code: 'failed-precondition', message: 'App is not configured for oauth' },
   'oauth/mismatch': { code: 'failed-precondition', message: 'Mismatch between requested account and account selected during authentication' }
+
 }
