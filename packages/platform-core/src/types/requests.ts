@@ -59,7 +59,7 @@ export interface Bundle<AuthData = AppAuthData, InputData = Record<string, any>,
 
 export interface Snap {
   log: Console['log']
-  request?: SnapRequest
+  request: SnapRequest
   errors: {
     Error: (message: string) => SnapError
     HaltedError: (message: string) => SnapError
@@ -68,6 +68,8 @@ export interface Snap {
     RateLimitError: (message: string, retryTimeout: number,) => SnapError
   }
 }
+
+export interface BeforeSnap extends Omit<Snap, 'request'> {}
 
 export type SnapRequest = (config: RequestFnConfig) => Promise<AxiosResponse>
 

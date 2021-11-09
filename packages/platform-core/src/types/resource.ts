@@ -91,6 +91,11 @@ export interface AppResource<AuthData=AppAuthData, InputData=any, Cursor=any> ex
   handler: AppResourceHandler<AuthData, InputData, Cursor>
 
   /**
+   * Label to be used against a metic
+   */
+  label?: AppRequest<string, AuthData, InputData, Cursor>
+
+  /**
    * Key/value list of columns and their types but dynamically generated
    */
   dynamicColumns?: AppRequest<Record<string, Column>, AuthData, InputData, Cursor>

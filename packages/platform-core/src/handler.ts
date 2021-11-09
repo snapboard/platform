@@ -7,7 +7,7 @@ import { createError, SnapError } from '@snapboard/errors'
 import path from 'path'
 import fs from 'fs'
 import { App } from './types/app'
-import { SnapRequest, RequestFnConfig, RequestObjectConfig, Snap, Bundle } from './types/requests'
+import { SnapRequest, RequestFnConfig, RequestObjectConfig, Snap, BeforeSnap, Bundle } from './types/requests'
 
 import { retryAfterSeconds } from './util'
 
@@ -112,7 +112,7 @@ export function createRequestFn (app: App, logger: Console['log'], bundle: Bundl
 
     // Apply the beforeRequest middleware
     let config: Partial<RequestFnConfig> = merge({ headers: {} }, initialConfig)
-    const snap: Snap = createSnap(logger)
+    const snap: BeforeSnap = createBeforeSnap(logger)
     if (app.beforeRequest) {
       forEach(app.beforeRequest, (beforeFn) => {
         config = beforeFn(config, snap, bundle)
@@ -208,10 +208,16 @@ export function createLogger (severity: string, app: App, version: string) {
   }
 }
 
-export function createSnap (logger: Console['log'], requester?: SnapRequest): Snap {
+export function createSnap (logger: Console['log'], requester: SnapRequest): Snap {
+  return {
+    ...createBeforeSnap(logger),
+    request: requester
+  }
+}
+
+export function createBeforeSnap (logger: Console['log']): BeforeSnap {
   return {
     log: logger,
-    request: requester,
     errors: {
       Error: (message: string, immedieteStop?: boolean) => createError('apps/internal', { message, internal: { immedieteStop } }),
       HaltedError: (message: string) => createError('apps/halted', { message }),

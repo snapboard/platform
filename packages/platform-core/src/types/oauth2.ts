@@ -10,8 +10,8 @@ export interface AppAuthOAuth2Config {
 }
 
 export interface AccessTokenResponse {
-  accessToken: string
-  access_token: string
+  accessToken?: string
+  access_token?: string
   refreshToken?: string
   refresh_token?: string
 }
@@ -30,4 +30,6 @@ export interface GetAccessTokenInputData {
 export interface RefereshAccessTokenInputData {
   redirect_uri: string
   scopes: string
+  refreshToken?: string
+  refresh_token?: string
 }
