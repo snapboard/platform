@@ -7,7 +7,7 @@ export type AppCategories = 'social'|'developer'|'payment-processor'|'popular'|'
 
 export interface AppBase {
   id: string
-  color?: string
+  color: string
   name: string
   tagline: string
   desc: string

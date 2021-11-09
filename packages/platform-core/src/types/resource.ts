@@ -53,12 +53,6 @@ export interface AppResourceBase {
   titleKey?: string
 
   /**
-   * Whether the importer returns custom data.
-   * @default none
-   */
-  custom?: 'none'|'partial'|'full'
-
-  /**
    * List of additional scopes (beyond defined in the auth section),
    * required for this auth
    */
