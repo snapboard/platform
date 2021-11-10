@@ -1,6 +1,6 @@
 {
   "name": "@snapboard/errors",
-  "version": "0.2.16",
+  "version": "0.2.17",
   "description": "Errors for Snapboard",
   "main": "dist/index.js",
   "author": "Calum Moore",
