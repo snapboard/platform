@@ -33,6 +33,7 @@ export const ERROR_REASONS = {
   'apps/not-found': { code: 'not-found', message: 'App does not exist' },
   'apps/invalid-account-inputs': { code: 'invalid-argument', message: 'Invalid inputs for specified app' },
   'apps/invalid-auth-type': { code: 'failed-precondition', message: 'Cannot perform operation on auth type' },
+  'apps/required-fields': { code: 'invalid-argument', message: 'Required input fields for resource are missing' },
   'apps/unknown-app': { code: 'invalid-argument', message: 'Unknown app' },
   'apps/unknown-resource': { code: 'invalid-argument', message: 'Unknown resource' },
 

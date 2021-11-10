@@ -2,7 +2,7 @@ import { Input } from './inputs'
 import { AppAuthOAuth2Config } from './oauth2'
 import { AppRequest, AppFn } from './requests'
 
-export type AppAuth<AT=any> = AppAuthToken<AT> | AppAuthOauth2
+export type AppAuth<AT=any> = AppAuthToken<AT> | AppAuthOauth2 | null
 
 export interface AppAuthBase {
   type: 'token'|'oauth2'
