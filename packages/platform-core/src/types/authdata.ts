@@ -11,7 +11,7 @@ export interface AppOAuth2Data <AuthInputs = Record<string, any>> extends AppAut
   refresh_token?: string
   accessToken: string
   access_token: string
-  test?: Record<string, any>
+  profile?: Record<string, any>
 }
 
 export interface AppAuthDataBase <AuthInputs> {

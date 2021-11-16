@@ -19,10 +19,10 @@ export interface AppAuthBase {
 
 export interface AppAuthBaseWithTest <AT = any> extends AppAuthBase {
   /**
-   * Test the connection using the provided token details. If connection
+   * Get the user profile and test the connection using the provided token details. If connection
    * is invalid then error should be thrown. Should return user data.
    */
-  test?: AppRequest<AT, any>
+  profile?: AppRequest<AT, any>
 
   /**
    * Get the label that will be used to name the account
